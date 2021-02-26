@@ -44,7 +44,7 @@ class SRServerListener(EventMixin):
   ''' TCP Server to handle connection to SR '''
   def __init__ (self, address=('127.0.0.1', 8888)):
     port = address[1]
-    self.listenTo(core.cs144_ofhandler)
+    self.listenTo(core.ee323_ofhandler)
     self.srclients = []
     self.listen_port = port
     self.intfname_to_port = {}
@@ -153,7 +153,7 @@ class SRServerListener(EventMixin):
     log.debug("packet-out %s: %r" % (out_intf, pkt))
     #log.debug("packet-out %s: " % ethernet(raw=pkt))
     log.debug('SRServerHandler raise packet out event')
-    core.cs144_srhandler.raiseEvent(SRPacketOut(pkt, out_port))
+    core.ee323_srhandler.raiseEvent(SRPacketOut(pkt, out_port))
 
 class SRPacketOut(Event):
   '''Event to raise upon receicing a packet back from SR'''
@@ -163,13 +163,13 @@ class SRPacketOut(Event):
     self.pkt = packet
     self.port = port
 
-class cs144_srhandler(EventMixin):
+class ee323_srhandler(EventMixin):
   _eventMixin_events = set([SRPacketOut])
 
   def __init__(self):
     EventMixin.__init__(self)
     self.listenTo(core)
-    #self.listenTo(core.cs144_ofhandler)
+    #self.listenTo(core.ee323_ofhandler)
     self.server = SRServerListener()
     log.debug("SRServerListener listening on %s" % self.server.listen_port)
     # self.server_thread = threading.Thread(target=asyncore.loop)
@@ -188,4 +188,4 @@ def launch (transparent=False):
   """
   Starts the SR handler application.
   """
-  core.registerNew(cs144_srhandler)
+  core.registerNew(ee323_srhandler)

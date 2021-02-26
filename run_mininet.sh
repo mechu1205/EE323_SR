@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo python lab3.py
+sudo python lab4.py

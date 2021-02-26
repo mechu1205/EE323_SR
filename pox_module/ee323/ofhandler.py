@@ -42,7 +42,7 @@ import sys
 
 log = core.getLogger()
 FLOOD_DELAY = 5
-#default location /home/ubuntu/cs144_lab3/IP_CONFIG
+#default location /home/ubuntu/ee323_lab3/IP_CONFIG
 IPCONFIG_FILE = './IP_CONFIG'
 IP_SETTING={}
 RTABLE = []
@@ -66,7 +66,7 @@ class OFHandler (EventMixin):
     self.connection = connection
     self.transparent = transparent
     self.sw_info = {}
-    self.connection.send(of.ofp_switch_config(miss_send_len = 65535))
+    self.connection.send(of.ofp_set_config(miss_send_len = 65535))
     for port in connection.features.ports:
         intf_name = port.name.split('-')
         if(len(intf_name) < 2):
@@ -78,8 +78,8 @@ class OFHandler (EventMixin):
     self.rtable = RTABLE
     # We want to hear Openflow PacketIn messages, so we listen
     self.listenTo(connection)
-    self.listenTo(core.cs144_srhandler)
-    core.cs144_ofhandler.raiseEvent(RouterInfo(self.sw_info, self.rtable))
+    self.listenTo(core.ee323_srhandler)
+    core.ee323_ofhandler.raiseEvent(RouterInfo(self.sw_info, self.rtable))
 
   def _handle_PacketIn (self, event):
     """
@@ -87,7 +87,7 @@ class OFHandler (EventMixin):
     """
     pkt = event.parse()
     raw_packet = pkt.raw
-    core.cs144_ofhandler.raiseEvent(SRPacketIn(raw_packet, event.port))
+    core.ee323_ofhandler.raiseEvent(SRPacketIn(raw_packet, event.port))
     msg = of.ofp_packet_out()
     msg.buffer_id = event.ofp.buffer_id
     msg.in_port = event.port
@@ -98,7 +98,7 @@ class OFHandler (EventMixin):
     msg = of.ofp_packet_out()
     new_packet = event.pkt
     msg.actions.append(of.ofp_action_output(port=event.port))
-    msg.buffer_id = -1
+    # msg.buffer_id = -1
     msg.in_port = of.OFPP_NONE
     msg.data = new_packet
     self.connection.send(msg)
@@ -111,7 +111,7 @@ class SRPacketIn(Event):
     self.pkt = packet
     self.port = port
 
-class cs144_ofhandler (EventMixin):
+class ee323_ofhandler (EventMixin):
   """
   Waits for OpenFlow switches to connect and makes them learning switches.
   """
@@ -142,7 +142,8 @@ def get_ip_setting():
     #print name, ip
     IP_SETTING[name] = ip
 
-  RTABLE.append( ('%s' % IP_SETTING['client'], '%s' % IP_SETTING['client'], '255.255.255.255', 'eth3') )
+  RTABLE.append( ('%s' % IP_SETTING['client1'], '%s' % IP_SETTING['client1'], '255.255.255.255', 'eth3') )
+  RTABLE.append( ('%s' % IP_SETTING['client2'], '%s' % IP_SETTING['client2'], '255.255.255.255', 'eth4') )
   RTABLE.append( ('%s' % IP_SETTING['server1'], '%s' % IP_SETTING['server1'], '255.255.255.255', 'eth1') )
   RTABLE.append( ('%s' % IP_SETTING['server2'], '%s' % IP_SETTING['server2'], '255.255.255.255', 'eth2') )
 
@@ -150,6 +151,7 @@ def get_ip_setting():
   ROUTER_IP['eth1'] = '%s' % IP_SETTING['sw0-eth1']
   ROUTER_IP['eth2'] = '%s' % IP_SETTING['sw0-eth2']
   ROUTER_IP['eth3'] = '%s' % IP_SETTING['sw0-eth3']
+  ROUTER_IP['eth4'] = '%s' % IP_SETTING['sw0-eth4']
   return 0
 
 
@@ -157,7 +159,7 @@ def launch (transparent=False):
   """
   Starts an Simple Router Topology
   """    
-  core.registerNew(cs144_ofhandler, str_to_bool(transparent))
+  core.registerNew(ee323_ofhandler, str_to_bool(transparent))
   
   r = get_ip_setting()
   if r == -1:

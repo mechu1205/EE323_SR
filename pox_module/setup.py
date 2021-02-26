@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='cs144',
+    name='ee323',
     version='0.0.0',
     description='Network controller for Stanford CS144 Lab #3/5',
     author='CS144 TA',
