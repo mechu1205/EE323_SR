@@ -51,12 +51,15 @@ void sr_init(struct sr_instance *sr)
 } /* -- sr_init -- */
 
 /*---------------------------------------------------------------------
-	Check source ip with ip_blacklist
-	Goal 1 : check whether the source ip is black ip or not
-	Goal 2 : Print Log 
-	- Format  :  " [Source ip blocked] : <source ip> "
-	e.g.) [Source ip blocked] : 10.0.2.100
-*/
+* Method: ip_black_list(struct sr_ip_hdr *iph)
+* Scope:  Local
+*
+* This method is called each time the sr_handlepacket() is called.
+* Block IP addresses in the blacklist and print the log.
+* - Format : "[IP blocked] : <IP address>"
+* - e.g.) [IP blocked] : 10.0.2.100
+*
+*---------------------------------------------------------------------*/
 int ip_black_list(struct sr_ip_hdr *iph)
 {
 	int blk = 0;
@@ -242,9 +245,9 @@ void sr_handlepacket(struct sr_instance *sr,
 						
 						/* queue */
 						
-				/*****************************************************/
 				/* done */
-				free(new_pck);
+
+				/*****************************************************/
 				return;
 			}
 			/* with others */
@@ -279,9 +282,9 @@ void sr_handlepacket(struct sr_instance *sr,
 						
 						/* queue */
 
-					/*****************************************************/
 					/* done */
-					free(new_pck);
+					
+					/*****************************************************/
 					return;
 				}
 				/* TTL not expired */
@@ -324,9 +327,9 @@ void sr_handlepacket(struct sr_instance *sr,
 					
 					/* queue */
 
-				/*****************************************************/
 				/* done */
-				free(new_pck);
+				
+				/*****************************************************/
 				return;
 			}
 		}
@@ -358,9 +361,9 @@ void sr_handlepacket(struct sr_instance *sr,
 
 				/* send */
 
-				/*****************************************************/
 				/* done */
-				free(new_pck);
+				
+				/*****************************************************/
 				return;
 			}
 
@@ -381,8 +384,10 @@ void sr_handlepacket(struct sr_instance *sr,
 						/* send */
 
 					/* done */
+					
+					/*****************************************************/
+					return;
 				}
-				/*****************************************************/
 				/* no exist */
 				else
 					return;

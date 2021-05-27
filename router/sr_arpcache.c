@@ -51,7 +51,7 @@ void sr_arpcache_handle_arpreq(struct sr_instance *sr, struct sr_arpreq *req)
 
     time_t curtime = time(NULL); /* current time */
 
-    if (difftime(curtime, req->sent) > 1.0)
+    if (difftime(curtime, req->sent) > 0.5)
     {
 
         /* 5 failures accumulated, discard */
@@ -71,9 +71,8 @@ void sr_arpcache_handle_arpreq(struct sr_instance *sr, struct sr_arpreq *req)
                     
                     /* queue */
 
-            /****************************************************/
             /* done */
-            sr_arpreq_destroy(cache, req);
+            /****************************************************/
         }
 
         /* try again */
